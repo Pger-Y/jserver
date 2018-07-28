@@ -1,0 +1,3 @@
+2018/07/28 12:26:02 lstat test.jso: no such file or directory
+exit status 1
+FAIL	jserver/floader	0.008s
