@@ -1,4 +1,3 @@
 {
-	"/root2":890,
-	"/root3":[1,2,34,5]
+	"/api/alarm":{"message":"","status":200}
 }
