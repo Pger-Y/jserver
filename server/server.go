@@ -20,6 +20,7 @@ func debug(data []byte, err error) {
 
 type Server struct {
 	srv  *http.Server
+	done chan struct{}
 	data map[string]interface{}
 }
 
@@ -37,7 +38,8 @@ func (ht *HT) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	} else if path == "/" {
 		fmt.Fprintf(w, ht.root_content)
 	} else {
-		http.Error(w, "404 Not Found", http.StatusNotFound)
+		message := fmt.Sprintf("[%s] 404 Not Found", path)
+		http.Error(w, message, http.StatusNotFound)
 	}
 }
 
@@ -53,7 +55,10 @@ func NewServer(addr string, data map[string]interface{}) *Server {
 
 	ht := &HT{data: data, root_content: content}
 	srv := &http.Server{Addr: addr, Handler: ht}
-	return &Server{srv: srv}
+	s := &Server{srv: srv}
+	s.done = make(chan struct{})
+
+	return s
 }
 
 func (s *Server) Stop() {
@@ -62,12 +67,18 @@ func (s *Server) Stop() {
 			log.Println("Server Stop error,", err)
 		}
 		log.Println("Server stoped...")
+		<-s.done
 	}
 }
 
 func (s *Server) Start() {
 	log.Println("Starting server...")
 	go func() {
+		s.srv.RegisterOnShutdown(func() {
+			if s != nil {
+				close(s.done)
+			}
+		})
 		if err := s.srv.ListenAndServe(); err != nil {
 			log.Printf("Httpserver ListenAndServe() error:%s\n", err)
 		}
