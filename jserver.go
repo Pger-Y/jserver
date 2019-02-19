@@ -2,9 +2,10 @@ package main
 
 import (
 	"flag"
-	"jserver/floader"
-	"jserver/server"
 	"log"
+
+	"github.com/jserver/floader"
+	"github.com/jserver/server"
 )
 
 func main() {
@@ -24,4 +25,5 @@ func main() {
 		srv = server.NewServer(*addr, data)
 		srv.Start()
 	}
+
 }
