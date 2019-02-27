@@ -32,6 +32,9 @@ type HT struct {
 func (ht *HT) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	debug(httputil.DumpRequest(req, true))
 	path := req.URL.Path
+	if req.Method == "GET" {
+		path = fmt.Sprintf("%s?%s", path, req.URL.RawQuery)
+	}
 	data, ok := ht.data[path]
 	if ok {
 		json.NewEncoder(w).Encode(data)
