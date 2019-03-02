@@ -32,7 +32,7 @@ type HT struct {
 func (ht *HT) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	debug(httputil.DumpRequest(req, true))
 	path := req.URL.Path
-	if req.Method == "GET" {
+	if req.Method == "GET" && req.URL.RawQuery != "" {
 		path = fmt.Sprintf("%s?%s", path, req.URL.RawQuery)
 	}
 	data, ok := ht.data[path]
